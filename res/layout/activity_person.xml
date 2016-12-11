@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_parson"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.xu.rewardtask.PersonActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/Person_Icon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@color/colorGray"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/person_icon_unlogin" />
+
+                <TextView
+                    android:id="@+id/Person_Description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@id/Person_Icon"
+                    android:layout_margin="@dimen/Person_TextSize"
+                    android:text="@string/PersonActivity_DefaultDescription"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/Person_TextSize" />
+
+                <TextView
+                    android:id="@+id/Person_UserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@id/Person_Description"
+                    android:layout_alignStart="@id/Person_Description"
+                    android:text="用户名"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="@dimen/Person_UserName_Size" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/colorBlack" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="@dimen/Person_Gold_size"
+                        android:layout_height="@dimen/Person_Gold_size"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/Person_Gold_Margin"
+                        android:src="@mipmap/gold_icon" />
+
+                    <TextView
+                        android:id="@+id/Person_Money"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="金币数"
+                        android:textSize="@dimen/Person_TextSize" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/colorBlack" />
+
+                <LinearLayout
+                    android:id="@+id/Person_Mission_Release"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="@dimen/Person_Gold_size"
+                        android:layout_height="@dimen/Person_Gold_size"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/Person_Gold_Margin"
+                        android:src="@mipmap/mission_icon" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/PersonActivity_MissionRelease"
+                        android:textSize="20sp"
+                        android:id="@+id/textView" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/colorBlack" />
+
+                <LinearLayout
+                    android:id="@+id/Person_Setting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="@dimen/Person_Gold_size"
+                        android:layout_height="@dimen/Person_Gold_size"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="@dimen/Person_Gold_Margin"
+                        android:src="@mipmap/setting" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="设置"
+                        android:textSize="@dimen/Person_TextSize" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/colorBlack" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

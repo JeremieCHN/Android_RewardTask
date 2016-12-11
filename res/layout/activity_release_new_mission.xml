@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ReleaseMission_CommentPart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <TableLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:stretchColumns="0">
+
+            <TableRow android:gravity="center">
+
+                <EditText
+                    android:text="0"
+                    android:gravity="center"
+                    android:id="@+id/ReleaseMission_RewardEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textSize="@dimen/ReleaseMission_ContentSize" />
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@mipmap/gold_icon" />
+
+            </TableRow>
+        </TableLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorGray" />
+
+        <Button
+            android:id="@+id/ReleaseMission_ReleaseButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/Transparent"
+            android:text="@string/ReleaseMission_Release"
+            android:textSize="@dimen/ReleaseMission_ContentSize" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/ReleaseMission_CommentPart"
+        android:background="@color/colorGray" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/ReleaseMission_CommentPart"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/ReleaseMission_MissionName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ReleaseMission_MissionNameTip"
+            android:textSize="@dimen/ReleaseMission_MissionNameSize" />
+
+        <EditText
+            android:id="@+id/ReleaseMission_MissionContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/Transparent"
+            android:gravity="top"
+            android:hint="@string/ReleaseMission_ContentTip"
+            android:textSize="@dimen/ReleaseMission_ContentSize" />
+
+    </LinearLayout>
+
+</RelativeLayout>

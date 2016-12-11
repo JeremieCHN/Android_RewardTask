@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_task_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/MissionDetail_MissionPart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:padding="@dimen/MissionDetail_Padding">
+
+        <TextView
+            android:id="@+id/MissionDetail_MissionName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mission标题"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/MissionDetail_MissionName_Size" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/MissionDetail_UserTime"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:text="wujy发布于2016.06.12"
+                android:textColor="@color/colorGray"
+                android:textSize="@dimen/MissionDetail_UserName_size" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end">
+
+                <TextView
+                    android:id="@+id/MissionDetail_Money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="\???"
+                    android:textColor="@color/colorGold"
+                    android:textSize="@dimen/MissionDetail_UserName_size" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/MissionDetail_UserName_size"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@mipmap/gold_icon" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/MissionDetail_IsCompleted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="此任务的赏金尚未被领取"
+            android:layout_marginTop="@dimen/MissionDetail_Content_Margin"
+            android:textSize="@dimen/MissionDetail_UserName_size" />
+
+        <TextView
+            android:id="@+id/MissionDetail_Content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/MissionDetail_Content_Margin"
+            android:layout_marginTop="@dimen/MissionDetail_Content_Margin"
+            android:text="\???"
+            android:textSize="@dimen/MissionDetail_Content_Size" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/MissionDetail_CommentEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/Transparent"
+        android:hint="@string/MissionDetailActivity_ReleaseComment"
+        android:textSize="@dimen/MissionDetail_EditSize" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/MissionDetail_CommentEdit"
+        android:background="@color/colorBlack" />
+
+    <TextView
+        android:id="@+id/MissionDetail_Tip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/MissionDetail_CommentEdit"
+        android:layout_below="@id/MissionDetail_MissionPart"
+        android:gravity="center"
+        android:text="@string/MissionDetailActivity_NoComment" />
+
+    <ListView
+        android:id="@+id/MissionDetail_Comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/MissionDetail_CommentEdit"
+        android:layout_below="@id/MissionDetail_MissionPart"
+        android:padding="@dimen/MissionDetail_Padding" />
+
+
+</RelativeLayout>

@@ -1,0 +1,47 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="TypeList_Interval">20dp</dimen>
+    <dimen name="MainActivity_Icon_Margin">10dp</dimen>
+    <dimen name="MainActivity_Parson_Button_Margin">10dp</dimen>
+    <dimen name="MainActivity_TypeListItem_Margin">10dp</dimen>
+    <dimen name="MainActivity_TypeListItem_TextSize">20sp</dimen>
+    <dimen name="MainActivity_TypeListItem_IconSize">40dp</dimen>
+
+    <dimen name="Person_UserName_Size">30sp</dimen>
+    <dimen name="Person_TextSize">20sp</dimen>
+    <dimen name="Person_Gold_size">40dp</dimen>
+    <dimen name="Person_Gold_Margin">10dp</dimen>
+
+    <dimen name="LOR_TextSize">20sp</dimen>
+    <dimen name="LOR_Text_Margin">10dp</dimen>
+
+    <dimen name="AreaMissionList_TypeName_Size">25sp</dimen>
+    <dimen name="AreaMissionList_TypeName_Padding">5dp</dimen>
+    <dimen name="AreaMissionList_Button_TextSize">20sp</dimen>
+    <dimen name="AreaMissionList_ListItem_TitleSize">20sp</dimen>
+    <dimen name="AreaMissionList_ListItem_TextSize">18sp</dimen>
+    <dimen name="AreaMissionList_ListItem_Margin">10dp</dimen>
+    <dimen name="AreaMissionList_SpinnerItem_Size">20sp</dimen>
+    <dimen name="AreaMissionList_SpinnerItem_Margin">10dp</dimen>
+
+    <dimen name="Setting_TextSize">20sp</dimen>
+    <dimen name="Setting_Margin">15dp</dimen>
+    <dimen name="Setting_Padding">10dp</dimen>
+    <dimen name="Setting_Password_Dialog_TextSize">15sp</dimen>
+    <dimen name="Setting_Password_Dialog_TitleSize">18sp</dimen>
+
+    <dimen name="MissionDetail_MissionName_Size">25sp</dimen>
+    <dimen name="MissionDetail_UserName_size">18sp</dimen>
+    <dimen name="MissionDetail_Content_Size">20sp</dimen>
+    <dimen name="MissionDetail_Content_Margin">10dp</dimen>
+    <dimen name="MissionDetail_Padding">10dp</dimen>
+    <dimen name="MissionDetail_EditSize">20sp</dimen>
+    <dimen name="MissionDetail_Comment_TimeSize">15sp</dimen>
+    <dimen name="MissionDetail_Comment_TextSize">18sp</dimen>
+
+    <dimen name="ReleaseMission_MissionNameSize">30sp</dimen>
+    <dimen name="ReleaseMission_ContentSize">18sp</dimen>
+</resources>

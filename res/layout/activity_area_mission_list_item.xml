@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/AreaMissionListItem_MissionTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/AreaMissionList_ListItem_Margin"
+        android:layout_marginTop="@dimen/AreaMissionList_ListItem_Margin"
+        android:layout_weight="8"
+        android:paddingStart="@dimen/AreaMissionList_ListItem_Margin"
+        android:text="Mission的标题"
+        android:textSize="@dimen/AreaMissionList_ListItem_TitleSize" />
+
+    <TextView
+        android:id="@+id/AreaMissionListItem_MissionTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:text="16.12.31" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/AreaMissionListItem_MissionGold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="100"
+            android:textColor="@color/colorGold"
+            android:textSize="@dimen/AreaMissionList_ListItem_TextSize" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/AreaMissionList_ListItem_TextSize"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/gold_icon" />
+    </LinearLayout>
+</LinearLayout>

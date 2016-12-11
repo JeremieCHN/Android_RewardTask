@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 第一个Array是用在代码中的，用于后台传输等 -->
+    <string-array name="TypeNameForCoding">
+        <item>live</item>
+        <item>sport</item>
+        <item>feeling</item>
+        <item>game</item>
+        <item>pc</item>
+        <item>else</item>
+    </string-array>
+
+    <!-- 这个Array是用在前台显示的，和前一个一一对应 -->
+    <string-array name="TypeNameText">
+        <item>生活</item>
+        <item>体育</item>
+        <item>情感</item>
+        <item>游戏</item>
+        <item>电脑技术</item>
+        <item>其他</item>
+    </string-array>
+
+    <!-- 城市array -->
+    <string-array name="CityList">
+        <item>全国</item>
+        <item>广州市</item>
+        <item>珠海市</item>
+    </string-array>
+</resources>

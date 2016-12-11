@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/TypeList_Interval"
+        android:background="@color/colorTypeListBG" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorTypeListDL" />
+
+    <LinearLayout
+        android:id="@+id/MainActivity_PersonPart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorTypeItemBG"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/MainActivity_Icon"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/MainActivity_Icon_Margin"
+            android:layout_weight="2"
+            android:adjustViewBounds="true"
+            android:padding="2dp"
+            android:src="@mipmap/person_icon_unlogin" />
+
+        <TextView
+            android:id="@+id/MainActivity_UserName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:text="@string/UnLogin"
+            android:textSize="@dimen/MainActivity_TypeListItem_TextSize" />
+
+
+        <ImageButton
+            android:id="@+id/MainActivity_Setting_Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/MainActivity_Parson_Button_Margin"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:background="@color/Transparent"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/setting" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorTypeListDL" />
+
+    <ListView
+        android:id="@+id/MainActivity_TypeList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorTypeListBG"
+        android:divider="@color/Transparent" />
+    <!--        android:dividerHeight="@dimen/TypeList_Interval"
+            android:paddingTop="@dimen/TypeList_Interval"-->
+
+</LinearLayout>

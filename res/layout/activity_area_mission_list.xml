@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_area_task_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Spinner
+        android:id="@+id/AreaMissionList_Position_Spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dialog" />
+
+
+    <LinearLayout
+        android:id="@+id/AreaMissionList_OrderPart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AreaMissionList_Position_Spinner">
+
+        <Button
+            android:id="@+id/AreaMissionList_TimeOrder"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@color/Transparent"
+            android:text="@string/AreaMissionList_OrderByTime"
+            android:textAlignment="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/AreaMissionList_Button_TextSize" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorGray" />
+
+        <Button
+            android:id="@+id/AreaMissionList_MoneyOrder"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="@color/Transparent"
+            android:text="@string/AreaMissionList_OrderByMoney"
+            android:textAlignment="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="@dimen/AreaMissionList_Button_TextSize" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/AreaMissionList_OrderFlagAbove"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_above="@id/AreaMissionList_OrderPart"
+        android:background="@color/colorGray" />
+
+    <View
+        android:id="@+id/AreaMissionList_OrderFlagBelow"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/AreaMissionList_OrderPart"
+        android:background="@color/colorGray" />
+
+    <Button
+        android:id="@+id/AreaMissionList_Release_NewMission_Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/Transparent"
+        android:text="@string/AreaMissionList_ReleaseNewMission"
+        android:textSize="@dimen/AreaMissionList_Button_TextSize" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/AreaMissionList_Swipe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/AreaMissionList_Release_NewMission_Button"
+        android:layout_below="@id/AreaMissionList_OrderPart">
+
+
+        <TextView
+            android:id="@+id/AreaMissionList_Tip"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/AreaMissionList_NoMissionTip"
+            android:visibility="visible" />
+
+        <ListView
+            android:id="@+id/AreaMissionList_MissionListByTime"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:divider="@color/colorGray" />
+
+        <ListView
+            android:id="@+id/AreaMissionList_MissionListByMoney"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/colorGray" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_above="@id/AreaMissionList_Release_NewMission_Button"
+        android:background="@color/colorGray" />
+
+
+</RelativeLayout>

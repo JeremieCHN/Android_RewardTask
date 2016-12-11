@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/Setting_Margin">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorGray" />
+
+    <Button
+        android:id="@+id/Setting_Icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Transparent"
+        android:padding="@dimen/Setting_Padding"
+        android:text="@string/SettingActivity_SetIcon"
+        android:textAlignment="viewStart"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/Setting_TextSize" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorGray" />
+
+    <Button
+        android:id="@+id/Setting_Description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Transparent"
+        android:padding="@dimen/Setting_Padding"
+        android:text="@string/SettingActivity_SetDescription"
+        android:textAlignment="viewStart"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/Setting_TextSize" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorGray" />
+
+    <Button
+        android:id="@+id/Setting_Password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Transparent"
+        android:padding="@dimen/Setting_Padding"
+        android:text="@string/SettingActivity_SetPassword"
+        android:textAlignment="viewStart"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/Setting_TextSize" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorGray" />
+
+    <Button
+        android:id="@+id/Setting_Logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/Transparent"
+        android:padding="@dimen/Setting_Padding"
+        android:text="@string/SettingActivity_Logout"
+        android:textAlignment="viewStart"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/Setting_TextSize" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorGray" />
+
+</LinearLayout>

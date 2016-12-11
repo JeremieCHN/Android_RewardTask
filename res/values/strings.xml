@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">RewardTask</string>
+
+    <!-- String for MainActivity -->
+    <string name="UnLogin">未登录</string>
+
+    <!-- String for LoginOrRegisterActivity -->
+    <string name="LRActivity_UserName">用户名</string>
+    <string name="LRActivity_UserName_Hint">请输入用户名</string>
+    <string name="LRActivity_Password">密码</string>
+    <string name="LRActivity_Password_Hint">请输入密码</string>
+    <string name="LRActivity_Login">登录</string>
+    <string name="LRActivity_Register">注册</string>
+    <string name="LRActivity_Divider">/</string>
+    <string name="LRActivity_UserNameNull">用户名不能为空！</string>
+    <string name="LRActivity_PasswordNull">密码不能为空！</string>
+    <string name="LRActivity_UserNameRepeat">该用户名已存在，请修改！</string>
+    <string name="LRActivity_Waiting">请稍后&#8230;</string>
+
+    <!-- String for AreaMissionListActivity -->
+    <string name="AreaMissionList_ReleaseNewMission">发布新任务</string>
+    <string name="AreaMissionList_OrderByTime">按时间排序</string>
+    <string name="AreaMissionList_OrderByMoney">按金币排序</string>
+    <string name="AreaMissionList_GpsDisable">导航已关闭</string>
+    <string name="AreaMissionList_NoMissionTip">此类别下此地区暂无任务</string>
+    <string name="AreaMissionList_MissionReward">奖励积分</string>
+    <string name="AreaMissionList_GettingList">正在获取列表&#8230;</string>
+
+    <!-- String for SettingActivity -->
+    <string name="SettingActivity_SetIcon">修改头像</string>
+    <string name="SettingActivity_SetDescription">修改个性签名</string>
+    <string name="SettingActivity_SetPassword">修改密码</string>
+    <string name="SettingActivity_Logout">退出当前账号</string>
+    <string name="SettingActivity_Waiting">正在修改&#8230;</string>
+    <string name="SettingActivity_OldPassword">原密码</string>
+    <string name="SettingActivity_NewPassword">新密码</string>
+    <string name="SettingActivity_ConfirmPassword">再次输入\n新密码</string>
+    <string name="SettingActivity_Ensure">确定</string>
+    <string name="SettingActivity_Cancel">取消</string>
+
+    <!-- String for PersonActivity -->
+    <string name="PersonActivity_DefaultDescription">这个人很懒，什么都没写。</string>
+    <string name="PersonActivity_MissionRelease">发布的任务</string>
+
+    <!-- String for MissionDetailActivity -->
+    <string name="MissionDetailActivity_NoComment">暂无评论</string>
+    <string name="MissionDetailActivity_ReleaseComment">我来说两句</string>
+    <string name="MissionDetailActivity_Adopt">采纳</string>
+    <string name="MissionDetailActivity_Reply">回复</string>
+
+    <!-- String for ReleaseNewMissionActivity -->
+    <string name="ReleaseMission_Release">发布任务</string>
+    <string name="ReleaseMission_MissionNameTip">请输入任务名称</string>
+    <string name="ReleaseMission_ContentTip">请输入任务详情</string>
+    <string name="ReleaseMission_Reward">奖励</string>
+</resources>

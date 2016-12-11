@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorTypeItemBG"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/TypeList_Interval" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorTypeListDL" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="2">
+
+        <TableRow
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/Main_TypeListItem_Icon"
+                android:layout_width="@dimen/MainActivity_TypeListItem_IconSize"
+                android:layout_height="@dimen/MainActivity_TypeListItem_IconSize"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/MainActivity_TypeListItem_Margin"
+                android:src="@mipmap/ic_launcher" />
+
+            <TextView
+                android:id="@+id/Main_TypeListItem_Name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="情感"
+                android:textSize="@dimen/MainActivity_TypeListItem_TextSize" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:layout_width="@dimen/MainActivity_TypeListItem_TextSize"
+                android:layout_height="@dimen/MainActivity_TypeListItem_TextSize"
+                android:layout_marginEnd="@dimen/MainActivity_TypeListItem_TextSize"
+                android:src="@mipmap/right_icon" />
+        </TableRow>
+    </TableLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorTypeListDL" />
+</LinearLayout>

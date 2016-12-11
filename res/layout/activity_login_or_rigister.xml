@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/LOR_ChooseLOR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/LOR_Text_Margin"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/LOR_ChooseLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/LRActivity_Login"
+            android:textSize="@dimen/LOR_TextSize" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/LRActivity_Divider"
+            android:textSize="@dimen/LOR_TextSize" />
+
+        <TextView
+            android:id="@+id/LOR_ChooseRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/LRActivity_Register"
+            android:textSize="@dimen/LOR_TextSize" />
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1">
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginEnd="@dimen/LOR_Text_Margin"
+                android:layout_marginStart="@dimen/LOR_Text_Margin"
+                android:gravity="center"
+                android:text="@string/LRActivity_UserName"
+                android:textSize="@dimen/LOR_TextSize" />
+
+            <EditText
+                android:id="@+id/LOR_UserName"
+                android:hint="@string/LRActivity_UserName_Hint" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:gravity="center"
+                android:text="@string/LRActivity_Password"
+                android:textSize="@dimen/LOR_TextSize" />
+
+            <EditText
+                android:hint="@string/LRActivity_Password_Hint"
+                android:inputType="textPassword"
+                android:id="@+id/LOR_Password" />
+        </TableRow>
+    </TableLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorGray" />
+
+        <Button
+            android:id="@+id/LOR_Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/Transparent"
+            android:text="@string/LRActivity_Login"
+            android:textSize="@dimen/LOR_TextSize" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorGray" />
+
+</LinearLayout>
+
