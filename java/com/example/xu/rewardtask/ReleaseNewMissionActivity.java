@@ -19,6 +19,20 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+
 public class ReleaseNewMissionActivity extends AppCompatActivity {
     private String TAG = "ReleaseNewMission";
     private EditText missionName;
@@ -43,7 +57,7 @@ public class ReleaseNewMissionActivity extends AppCompatActivity {
         final String[] cities = getResources().getStringArray(R.array.CityList);
         final String[] types = getResources().getStringArray(R.array.TypeNameText);
 
-        SpinnerAdapter cityAdapter = new ArrayAdapter<String>(this, R.layout.activity_area_mission_list_spinner_item, R.id.AreaMissionList_SpinnerText,cities);
+        SpinnerAdapter cityAdapter = new ArrayAdapter<String>(this, R.layout.activity_area_mission_list_spinner_item, R.id.AreaMissionList_SpinnerText, cities);
         citySpinner.setAdapter(cityAdapter);
 
         SpinnerAdapter typeAdapter = new ArrayAdapter<String>(this, R.layout.activity_area_mission_list_spinner_item, R.id.AreaMissionList_SpinnerText, types);
@@ -117,12 +131,63 @@ public class ReleaseNewMissionActivity extends AppCompatActivity {
     class sendMission extends AsyncTask<Void, Void, String> {
 
         private AlertDialog dialog = null;
+        private String missionNameSend = null;
+        private String publisherSend = null;
+        private String contentSend = null;
+        private String typeSend = null;
+        private String citySend = null;
+        private String money = null;
 
         @Override
         protected String doInBackground(Void... params) {
-            Log.e(TAG, "City:"+city);
-            Log.e(TAG, "Type:"+type);
+            Log.e(TAG, "City:" + city);
+            Log.e(TAG, "Type:" + type);
             // TODO 发给服务器
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/sendMission");
+                connection.setReadTimeout(4000);
+                connection.setConnectTimeout(4000);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+
+                OutputStream os = connection.getOutputStream();
+                PrintWriter writer = new PrintWriter(os);
+                writer.write("username=" + URLEncoder.encode(CurrentUser.getInstance().getUserName(), "UTF-8"));
+                writer.write("&missionname=" + URLEncoder.encode(missionNameSend, "UTF-8"));
+                writer.write("&content=" + URLEncoder.encode(contentSend, "UTF-8"));
+                writer.write("&type=" + URLEncoder.encode(typeSend, "UTF-8"));
+                writer.write("&city=" + URLEncoder.encode(citySend, "UTF-8"));
+                writer.write("&gold=" + URLEncoder.encode(money, "UTF-8"));
+                writer.flush();
+                writer.close();
+
+                InputStream is = connection.getInputStream();
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+
+                JSONObject jsonObject = new JSONObject(builder.toString());
+                if (jsonObject.getString("status") != null) {
+                    return jsonObject.getString("status");
+                }
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return "InternetGG";
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "InternetGG";
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return "InternetGG";
+            } finally {
+                if (connection != null)
+                    connection.disconnect();
+            }
             return null;
         }
 
@@ -144,6 +209,13 @@ public class ReleaseNewMissionActivity extends AppCompatActivity {
                 }
             });
             dialog.show();
+
+            missionNameSend = missionName.getText().toString();
+            publisherSend = CurrentUser.getInstance().getUserName();
+            contentSend = content.getText().toString();
+            typeSend = type;
+            citySend = city;
+            money = reward.getText().toString();
         }
 
         @Override
@@ -169,7 +241,7 @@ public class ReleaseNewMissionActivity extends AppCompatActivity {
     }
 
     @Override
-    public  void onBackPressed() {
+    public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide2right);
     }

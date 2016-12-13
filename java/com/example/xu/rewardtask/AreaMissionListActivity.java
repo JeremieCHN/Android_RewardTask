@@ -283,8 +283,8 @@ public class AreaMissionListActivity extends AppCompatActivity {
 
                 httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("GET");
-                httpURLConnection.setReadTimeout(4000);
-                httpURLConnection.setReadTimeout(4000);
+                httpURLConnection.setConnectTimeout(4000);
+                httpURLConnection.setReadTimeout(8000);
                 httpURLConnection.connect();
 
                 if (isCancelled()) return null;
