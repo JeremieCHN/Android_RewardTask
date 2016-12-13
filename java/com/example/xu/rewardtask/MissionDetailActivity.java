@@ -1,5 +1,6 @@
 package com.example.xu.rewardtask;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -29,10 +31,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -42,9 +47,9 @@ public class MissionDetailActivity extends AppCompatActivity {
     // TODO 待测试
 
     private String TAG = "MissionDetailActivity";
-    private String userName;
+    private String missionPublisher;
     private String missionName;
-    private TextView userNameTimeTV;
+    private TextView PublisherTimeTV;
     private TextView tip;
     private ListView commentLV;
     private EditText commentEdit;
@@ -61,10 +66,10 @@ public class MissionDetailActivity extends AppCompatActivity {
 
     void initView() {
         Intent intent = getIntent();
-        userName = intent.getStringExtra("UserName");
+        missionPublisher = intent.getStringExtra("UserName");
         missionName = intent.getStringExtra("MissionName");
 
-        userNameTimeTV = (TextView) findViewById(R.id.MissionDetail_UserTime);
+        PublisherTimeTV = (TextView) findViewById(R.id.MissionDetail_UserTime);
         tip = (TextView) findViewById(R.id.MissionDetail_Tip);
         IsCompletedTip = (TextView) findViewById(R.id.MissionDetail_IsCompleted);
 
@@ -75,7 +80,7 @@ public class MissionDetailActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEND || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                     new sendComment().execute(
-                            new Comment(userName, missionName,
+                            new Comment(missionPublisher, missionName,
                                     commentEdit.getText().toString(),
                                     CurrentUser.getInstance().getUserName(),
                                     new Date(System.currentTimeMillis())));
@@ -85,13 +90,27 @@ public class MissionDetailActivity extends AppCompatActivity {
             }
         });
 
+        // 未登录的话直接显示评论编辑的部分
+        if (!CurrentUser.getInstance().isLogin())
+            findViewById(R.id.MissionDetail_CommentEditPart).setVisibility(View.GONE);
+
+        Button button = (Button) findViewById(R.id.MissionDetail_ReleaseButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new sendComment().execute(new Comment(missionPublisher, missionName,
+                        commentEdit.getText().toString(),
+                        CurrentUser.getInstance().getUserName(),
+                        new Date(System.currentTimeMillis())));
+            }
+        });
         ((TextView) findViewById(R.id.MissionDetail_MissionName)).setText(missionName);
-        userNameTimeTV.setText(userName);
+        PublisherTimeTV.setText(missionPublisher);
 
         if (intent.getStringExtra("Date") != null) {
             Date date = new Date(intent.getStringExtra("Date"));
             DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd hh:mm");
-            userNameTimeTV.setText(userName + "发布于" + dateFormat.format(date));
+            PublisherTimeTV.setText(missionPublisher + "发布于" + dateFormat.format(date));
         }
 
         initListView();
@@ -111,8 +130,13 @@ public class MissionDetailActivity extends AppCompatActivity {
         commentLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                // 未登陆点击不会有任何反应
+                if (!CurrentUser.getInstance().isLogin())
+                    return;
+
                 final Comment item = CommentList_Data.get(position);
-                if (item.getUsername().equals(userName)) {
+                if (item.getUsername().equals(missionPublisher)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MissionDetailActivity.this);
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.activity_mission_detail_dialog, null);
@@ -124,6 +148,7 @@ public class MissionDetailActivity extends AppCompatActivity {
                             // TODO 采纳操作，通知服务器
                             item.setAdopt();
                             adapter.notifyDataSetChanged();
+                            new AdoptComment().execute();
                         }
                     });
 
@@ -195,7 +220,10 @@ public class MissionDetailActivity extends AppCompatActivity {
             viewHolder.commentDate.setText(format.format(list.get(i).getDate()));
 
             // TODO 采纳变色
-
+            /*
+            if (list.get(i).isAdopt())
+                viewHolder.commentDetail.setTextColor(getResources().getColor(R.color.colorRed));
+            */
             return convertView;
         }
 
@@ -213,7 +241,9 @@ public class MissionDetailActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
 
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/missionServlet?mission=" + missionName + "&publisher=" + userName);
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/missionServlet?mission=" +
+                        URLEncoder.encode(missionName, "UTF-8") + "&publisher=" +
+                        URLEncoder.encode(missionPublisher, "UTF-8"));
 
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -265,11 +295,16 @@ public class MissionDetailActivity extends AppCompatActivity {
                 Toast.makeText(MissionDetailActivity.this, "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
             } else {
                 try {
+                    Log.e(TAG, s);
                     JSONObject jsonObject = new JSONObject(s);
 
-                    Date date = new Date(jsonObject.getString("Date"));
+
+                    String dateStr = jsonObject.getString("Date");
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    Date date = format.parse(dateStr.substring(0, 19));
+
                     DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd hh:mm");
-                    userNameTimeTV.setText(userName + "发布于" + dateFormat.format(date));
+                    PublisherTimeTV.setText(missionPublisher + "发布于" + dateFormat.format(date));
 
                     TextView contentTV = (TextView) findViewById(R.id.MissionDetail_Content);
                     contentTV.setText(jsonObject.getString("Content"));
@@ -284,6 +319,8 @@ public class MissionDetailActivity extends AppCompatActivity {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
                 new getCommentAsyncTask().execute();
             }
@@ -297,7 +334,7 @@ public class MissionDetailActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
 
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/getComment?mission=" + missionName + "&publisher=" + userName);
+                URL url = new URL("http://" + CurrentUser.IP + "/getComment?mission=" + missionName + "&publisher=" + missionPublisher);
 
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -383,22 +420,89 @@ public class MissionDetailActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Comment... params) {
+            HttpURLConnection connection;
+
+            try {
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidService/sendComment");
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+
+                connection.setDoOutput(true);
+                connection.setDoInput(true);
+
+                connection.getOutputStream().write(params[0].toPostParams().getBytes());
+                connection.connect();
+
+                if (connection.getResponseCode() == 200) {
+                    StringBuilder builder = new StringBuilder();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null)
+                        builder.append(line);
+
+                    return builder.toString();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return null;
+        }
+
+        AlertDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MissionDetailActivity.this);
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_loading, null);
+
+            dialogView.findViewById(R.id.Dialog_Loading).setAnimation(AnimationUtils.loadAnimation(MissionDetailActivity.this, R.anim.roteting));
+            ((TextView) dialogView.findViewById(R.id.Dialog_Text)).setText("正在发布评论...");
+
+            builder.setView(dialogView);
+            dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
+                        return true;
+                    else
+                        return false;
+
+                }
+            });
+
+            dialog.show();
         }
 
         @Override
         protected void onPostExecute(String s) {
-
+            if (s != null) {
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    String statusStr = jsonObject.getString("Status");
+                    String dateStr = jsonObject.getString("Date");
+                    if (statusStr != null && statusStr.equals("Success")) {
+                        CommentList_Data.add(new Comment(missionPublisher, missionName, commentEdit.getText().toString(),
+                                CurrentUser.getInstance().getUserName(), new Date(dateStr)));
+                        commentEdit.setText("");
+                        Toast.makeText(MissionDetailActivity.this, "发布成功，请稍后再试", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            Toast.makeText(MissionDetailActivity.this, "发布失败，请稍后再试", Toast.LENGTH_SHORT).show();
+            if (dialog != null) dialog.cancel();
         }
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent keyEvent) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            finish();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, keyEvent);
-        }
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide2right);
     }
 }

@@ -76,27 +76,30 @@
         android:layout_above="@id/AreaMissionList_Release_NewMission_Button"
         android:layout_below="@id/AreaMissionList_OrderPart">
 
-
-        <TextView
-            android:id="@+id/AreaMissionList_Tip"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/AreaMissionList_NoMissionTip"
-            android:visibility="visible" />
+            android:orientation="horizontal">
 
-        <ListView
-            android:id="@+id/AreaMissionList_MissionListByTime"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:divider="@color/colorGray" />
+            <TextView
+                android:id="@+id/AreaMissionList_Tip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/AreaMissionList_NoMissionTip" />
 
-        <ListView
-            android:id="@+id/AreaMissionList_MissionListByMoney"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@color/colorGray" />
+            <ListView
+                android:id="@+id/AreaMissionList_MissionListByTime"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@color/colorGray" />
 
+            <ListView
+                android:id="@+id/AreaMissionList_MissionListByMoney"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@color/colorGray" />
+        </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 
 

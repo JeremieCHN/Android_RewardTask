@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +35,9 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -68,7 +71,7 @@ public class AreaMissionListActivity extends AppCompatActivity {
 
         initOrder();
         bindAdapter();
-        getMissionList();
+        getMissionListAsyncTask_.execute();
     }
 
     void initButton() {
@@ -76,20 +79,25 @@ public class AreaMissionListActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(AreaMissionListActivity.this, ReleaseNewMissionActivity.class);
-                intent.putExtra("City", city);
-                intent.putExtra("Type", type);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
+                if (CurrentUser.getInstance().isLogin()) {
+                    Intent intent = new Intent(AreaMissionListActivity.this, ReleaseNewMissionActivity.class);
+                    intent.putExtra("City", city);
+                    intent.putExtra("Type", type);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
+                } else {
+                    Toast.makeText(AreaMissionListActivity.this, "您尚未登录，请先登录", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
+    private String[] cities;
     void initSpinner() {
 
         Spinner spinner = (Spinner) findViewById(R.id.AreaMissionList_Position_Spinner);
 
-        final String[] cities = getResources().getStringArray(R.array.CityList);
+        cities = getResources().getStringArray(R.array.CityList);
 
         SpinnerAdapter adapter = new ArrayAdapter<String>(
                 AreaMissionListActivity.this,
@@ -112,9 +120,9 @@ public class AreaMissionListActivity extends AppCompatActivity {
                     CurrentUser.getInstance().setCity(city);
                     if (isRefreshing) {
                         getMissionListAsyncTask_.cancel(true);
-                        getMissionListAsyncTask_ = new getMissionListAsyncTask();
-                        getMissionListAsyncTask_.execute();
                     }
+                    getMissionListAsyncTask_ = new getMissionListAsyncTask();
+                    getMissionListAsyncTask_.execute();
                 }
             }
 
@@ -165,7 +173,6 @@ public class AreaMissionListActivity extends AppCompatActivity {
                 if (order != null && order.equals("Money")) {
                     order = "Time";
 
-                    Log.i(TAG, "time");
                     timeList.setVisibility(View.VISIBLE);
                     moneyList.setVisibility(View.GONE);
 
@@ -253,103 +260,34 @@ public class AreaMissionListActivity extends AppCompatActivity {
         }
     }
 
-    private void getMissionList() {
-        // TODO 待测试
-        // 尝试读取文件
-        File file = new File(city + type);
-        if (file.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(file);
-                byte[] bytes = new byte[1024];
-                String fileString = "";
-                while (fis.read(bytes) != -1) {
-                    fileString += new String(bytes, "UTF-8");
-                }
-
-                JSONObject job = new JSONObject(fileString);
-
-                // 判断文件是否已经过时 有效时长为一天
-                if ((System.currentTimeMillis() - job.getLong("Time")) / (1000 * 3600 * 24) >= 1) {
-
-                    Log.i(TAG, "文件过时");
-
-                    if (!file.delete()) {
-                        Log.i(TAG, "删除文件失败");
-                    }
-
-                    getMissionListAsyncTask_.execute();
-                    return;
-                }
-
-                // 解析文件中的内容
-
-                Log.i(TAG, "使用文件中的内容");
-
-                JSONArray jsonArray = job.getJSONArray("MissionArray");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    missionList_data.add(new MissionListItem(jsonObject));
-                }
-
-                for (MissionListItem mli : missionList_data) {
-                    timeList_data.add(mli);
-                    moneyList_data.add(mli);
-                }
-
-                Collections.sort(timeList_data, new Comparator<MissionListItem>() {
-                    @Override
-                    public int compare(MissionListItem o1, MissionListItem o2) {
-                        if (o1.date.after(o2.date))
-                            return 1;
-                        else return 0;
-                    }
-                });
-
-                Collections.sort(moneyList_data, new Comparator<MissionListItem>() {
-                    @Override
-                    public int compare(MissionListItem o1, MissionListItem o2) {
-                        if (o1.date.after(o2.date))
-                            return 1;
-                        else return 0;
-                    }
-                });
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                getMissionListAsyncTask_.execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-                getMissionListAsyncTask_.execute();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                getMissionListAsyncTask_.execute();
-            }
-
-        } else
-            // 网络请求
-            getMissionListAsyncTask_.execute();
-    }
-
     private class getMissionListAsyncTask extends AsyncTask<Void, Void, String> {
         TextView tip = (TextView) findViewById(R.id.AreaMissionList_Tip);
+        private HttpURLConnection httpURLConnection = null;
 
         @Override
         protected String doInBackground(Void... params) {
 
             Log.i(TAG, city);
-
-            HttpURLConnection httpURLConnection = null;
+            if (isCancelled()) return null;
 
             String cityParams = city;
             if (city.equals("全国"))
-                cityParams = "All";
+                cityParams = "all";
 
+
+            // TODO 去掉因为debug加上去的东西
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/AndroidService/menuServlet?city=" + cityParams + "&type=" + type);
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/menuServlet?city=" +
+                        URLEncoder.encode(cityParams,"UTF-8") + "&type=" +
+                        URLEncoder.encode(type, "UTF-8"));
+
                 httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("GET");
+                httpURLConnection.setReadTimeout(4000);
+                httpURLConnection.setReadTimeout(4000);
                 httpURLConnection.connect();
 
+                if (isCancelled()) return null;
                 Log.i(TAG, Integer.toString(httpURLConnection.getResponseCode()));
 
                 StringBuilder stringBuilder = new StringBuilder();
@@ -361,15 +299,15 @@ public class AreaMissionListActivity extends AppCompatActivity {
                     stringBuilder.append(line);
                 }
 
-                Log.i(TAG, stringBuilder.toString());
-
                 JSONArray jsonArray = new JSONArray(stringBuilder.toString());
 
-                if (jsonArray.optJSONObject(0).getString("Statue").equals("Empty"))
+                if (jsonArray.optJSONObject(0).getString("Status").equals("Empty"))
                     return "ListIsNull";
 
                 // 解析获取到的列表
                 for (int i = 0; i < jsonArray.length(); i++) {
+                    missionList_data.clear();
+
                     JSONObject jsonObject = jsonArray.optJSONObject(i);
 
                     MissionListItem missionListItem = new MissionListItem(jsonObject);
@@ -377,11 +315,17 @@ public class AreaMissionListActivity extends AppCompatActivity {
                     missionList_data.add(missionListItem);
                 }
 
+                Log.i(TAG, timeList_data.toString());
+                timeList_data.clear();
+                moneyList_data.clear();
+                Log.i(TAG, timeList_data.toString());
+
                 for (MissionListItem mli : missionList_data) {
                     timeList_data.add(mli);
                     moneyList_data.add(mli);
                 }
 
+                Log.i(TAG, timeList_data.toString());
                 Collections.sort(timeList_data, new Comparator<MissionListItem>() {
                     @Override
                     public int compare(MissionListItem o1, MissionListItem o2) {
@@ -391,7 +335,6 @@ public class AreaMissionListActivity extends AppCompatActivity {
                     }
                 });
 
-
                 Collections.sort(moneyList_data, new Comparator<MissionListItem>() {
                     @Override
                     public int compare(MissionListItem o1, MissionListItem o2) {
@@ -400,18 +343,6 @@ public class AreaMissionListActivity extends AppCompatActivity {
                         else return 0;
                     }
                 });
-
-                // 写入到文件
-                File file = new File(city + type);
-                FileWriter fw = new FileWriter(file);
-
-                JSONObject jobToFile = new JSONObject();
-                jobToFile.put("Time", System.currentTimeMillis());
-                jobToFile.put("MissionArray", jsonArray);
-
-                fw.write(jobToFile.toString());
-                fw.flush();
-                fw.close();
 
                 return "Success";
             } catch (UnknownHostException e) {
@@ -429,6 +360,9 @@ public class AreaMissionListActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
                 return "Fail";
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return "Fail";
             } finally {
                 if (httpURLConnection != null)
                     httpURLConnection.disconnect();
@@ -439,6 +373,7 @@ public class AreaMissionListActivity extends AppCompatActivity {
         protected void onPreExecute() {
             Log.i(TAG, "即将开始请求");
             tip.setText(R.string.AreaMissionList_GettingList);
+            swipe.setRefreshing(true);
             isRefreshing = true;
         }
 
@@ -462,22 +397,27 @@ public class AreaMissionListActivity extends AppCompatActivity {
             }
             isRefreshing = false;
         }
+
+        @Override
+        protected void onCancelled(String s) {
+            Log.i(TAG, "取消任务");
+            if (httpURLConnection != null)
+                httpURLConnection.disconnect();
+        }
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onBackPressed() {
         if (isRefreshing && getMissionListAsyncTask_ != null)
             getMissionListAsyncTask_.cancel(true);
+        super.onBackPressed();
         overridePendingTransition(R.anim.slide_from_left, R.anim.slide2right);
     }
-
+    
     @Override
     public void onRestart() {
         super.onRestart();
         getMissionListAsyncTask_ = new getMissionListAsyncTask();
         getMissionListAsyncTask_.execute();
     }
-
-
 }

@@ -47,6 +47,7 @@
     <string name="MissionDetailActivity_ReleaseComment">我来说两句</string>
     <string name="MissionDetailActivity_Adopt">采纳</string>
     <string name="MissionDetailActivity_Reply">回复</string>
+    <string name="MissionDetailActivity_Send">发布</string>
 
     <!-- String for ReleaseNewMissionActivity -->
     <string name="ReleaseMission_Release">发布任务</string>

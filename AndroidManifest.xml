@@ -45,6 +45,7 @@
         <activity
             android:name=".ReleaseNewMissionActivity"
             android:launchMode="singleInstance" />
+        <activity android:name=".MyMissionActivity"></activity>
     </application>
 
 </manifest>

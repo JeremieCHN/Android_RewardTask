@@ -24,7 +24,7 @@ public class Comment {
         username = jsonObject.getString("Username");
         missionName = jsonObject.getString("Missionname");
         comment = jsonObject.getString("Comment");
-        username =  jsonObject.getString("Commentor");
+        username = jsonObject.getString("Commentor");
         date = new Date(jsonObject.getString("Date"));
         // TODO 和服务端校对
         isAdopted = "false";
@@ -52,5 +52,12 @@ public class Comment {
 
     public void setAdopt() {
         isAdopted = ADOPTED;
+    }
+
+    public String toPostParams() {
+        return "username=" + missionUsername
+                + "&mission=" + missionName
+                + "&commentor=" + username
+                + "&comment=" + comment;
     }
 }

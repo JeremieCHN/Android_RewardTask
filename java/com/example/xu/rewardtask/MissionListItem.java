@@ -3,6 +3,8 @@ package com.example.xu.rewardtask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -19,11 +21,13 @@ public class MissionListItem {
         date = date_;
     }
 
-    public MissionListItem(JSONObject jsonObject) throws JSONException {
-        userName = jsonObject.getString("UserName");
-        missionName = jsonObject.getString("MissionName");
-        money = Integer.valueOf(jsonObject.getString("Money"));
-        date = new Date(jsonObject.getString("Date"));
+    public MissionListItem(JSONObject jsonObject) throws JSONException, ParseException {
+        userName = jsonObject.getString("Username");
+        missionName = jsonObject.getString("Missionname");
+        money = Integer.valueOf(jsonObject.getString("Gold"));
+        String dateStr = jsonObject.getString("Date");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        date = format.parse(dateStr.substring(0, 19));
     }
 
     public String toString() {

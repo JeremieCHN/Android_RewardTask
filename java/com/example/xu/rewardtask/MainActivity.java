@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private void initPersonPart() {
         View personPart = findViewById(R.id.MainActivity_PersonPart);
         personPart.setOnClickListener(new View.OnClickListener() {
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentUser.isLogin()) {
                     startActivity(new Intent(MainActivity.this, SettingActivity.class));
-                    overridePendingTransition(R.anim.slide_from_bottom, R.anim.stay_half_sec);
+                    overridePendingTransition(R.anim.slide_from_bottom, R.anim.slide2top);
                 } else {
                     Toast.makeText(MainActivity.this, "请先登录", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(MainActivity.this, LoginOrRegisterActivity.class));
@@ -154,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
 
+        super.onResume();
+
         if (CurrentUser.getInstance().getHeadPath() == null || HeadImgPath != null) {
             HeadImgPath = null;
             icon.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.person_icon_unlogin));
@@ -183,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
                 icon.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.person_icon_unlogin));
             }
         }
-        super.onResume();
     }
 
     @Override
@@ -195,10 +195,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        CurrentUser.getInstance().writeToFile(MainActivity.this);
-        if (keyCode == KeyEvent.KEYCODE_BACK)
-            System.exit(0);
-        return super.onKeyDown(keyCode, event);
+    public void onBackPressed() {
+        System.exit(0);
     }
 }

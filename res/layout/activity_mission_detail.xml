@@ -63,8 +63,8 @@
             android:id="@+id/MissionDetail_IsCompleted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="此任务的赏金尚未被领取"
             android:layout_marginTop="@dimen/MissionDetail_Content_Margin"
+            android:text="此任务的赏金尚未被领取"
             android:textSize="@dimen/MissionDetail_UserName_size" />
 
         <TextView
@@ -77,26 +77,52 @@
             android:textSize="@dimen/MissionDetail_Content_Size" />
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/MissionDetail_CommentEdit"
+    <RelativeLayout
+        android:id="@+id/MissionDetail_CommentEditPart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/Transparent"
-        android:hint="@string/MissionDetailActivity_ReleaseComment"
-        android:textSize="@dimen/MissionDetail_EditSize" />
+        android:layout_alignParentBottom="true">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_above="@id/MissionDetail_CommentEdit"
-        android:background="@color/colorBlack" />
+        <EditText
+            android:id="@+id/MissionDetail_CommentEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/Transparent"
+            android:hint="@string/MissionDetailActivity_ReleaseComment"
+            android:padding="@dimen/MissionDetail_Padding"
+            android:textSize="@dimen/MissionDetail_EditSize" />
+
+        <Button
+            android:id="@+id/MissionDetail_ReleaseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_alignBottom="@id/MissionDetail_CommentEdit"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/MissionDetail_CommentEdit"
+            android:background="@color/Transparent"
+            android:text="@string/MissionDetailActivity_Send" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignTop="@id/MissionDetail_CommentEdit"
+            android:background="@color/colorBlack" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_alignBottom="@id/MissionDetail_ReleaseButton"
+            android:layout_alignTop="@id/MissionDetail_ReleaseButton"
+            android:layout_toStartOf="@id/MissionDetail_ReleaseButton"
+            android:background="@color/colorBlack" />
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/MissionDetail_Tip"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/MissionDetail_CommentEdit"
+        android:layout_above="@id/MissionDetail_CommentEditPart"
         android:layout_below="@id/MissionDetail_MissionPart"
         android:gravity="center"
         android:text="@string/MissionDetailActivity_NoComment" />
@@ -105,7 +131,7 @@
         android:id="@+id/MissionDetail_Comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/MissionDetail_CommentEdit"
+        android:layout_above="@id/MissionDetail_CommentEditPart"
         android:layout_below="@id/MissionDetail_MissionPart"
         android:padding="@dimen/MissionDetail_Padding" />
 

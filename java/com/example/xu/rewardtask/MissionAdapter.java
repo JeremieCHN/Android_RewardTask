@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MissionAdapter extends BaseAdapter {
@@ -56,7 +58,8 @@ public class MissionAdapter extends BaseAdapter {
         //这里获取控件名字
         viewHolder.title.setText(list.get(i).missionName);
         viewHolder.gold.setText(Integer.toString(list.get(i).money));
-        viewHolder.date.setText(list.get(i).date.toString());
+        DateFormat format = new SimpleDateFormat("yy-MM-dd");
+        viewHolder.date.setText(format.format(list.get(i).date));
         return convertView;
     }
 

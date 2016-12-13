@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/MyMission_MissionName"
+        android:text="我是标题啊大兄弟"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/MyMission_Item_Size"
+        android:padding="@dimen/MyMission_Item_Padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

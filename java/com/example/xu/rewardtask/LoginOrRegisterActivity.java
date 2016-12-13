@@ -324,6 +324,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                     intent.putExtra("LastActivity", "LOR");
                     intent.putExtra("Statue", "Login");
                     startActivity(intent);
+                    finish();
                     overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
 
                     CurrentUser.getInstance().UserLogin(jsonObject);
@@ -418,6 +419,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                     intent.putExtra("LastActivity", "LOR");
                     intent.putExtra("Statue", "Register");
                     startActivity(intent);
+                    finish();
                     overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
 
                     CurrentUser.getInstance().UserRegister(nameStr, passwordStr);
@@ -456,4 +458,20 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         super.onPause();
         overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
+
+    }
+
+/*    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            startActivity(new Intent(LoginOrRegisterActivity.this, MainActivity.class));
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }*/
 }

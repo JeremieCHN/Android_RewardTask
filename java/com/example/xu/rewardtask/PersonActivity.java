@@ -53,7 +53,8 @@ public class PersonActivity extends AppCompatActivity {
         Person_Mission_Release.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO 跳转 等雨哥的代码
+                startActivity(new Intent(PersonActivity.this, MyMissionActivity.class));
+                overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
             }
         });
 
@@ -63,7 +64,7 @@ public class PersonActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(PersonActivity.this, SettingActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_from_bottom, R.anim.stay_half_sec);
+                overridePendingTransition(R.anim.slide_from_bottom, R.anim.slide2top);
             }
         });
     }
@@ -72,7 +73,6 @@ public class PersonActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         initView();
-
         super.onStart();
     }
 

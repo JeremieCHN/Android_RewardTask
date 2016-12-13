@@ -241,7 +241,7 @@ public class SettingActivity extends AppCompatActivity {
                 intent.putExtra("LastActivity", "Setting");
                 intent.putExtra("Statue", "Logout");
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_from_top, R.anim.stay_half_sec);
+                overridePendingTransition(R.anim.slide_from_top, R.anim.slide2bottom);
             }
         });
     }
@@ -391,11 +391,7 @@ public class SettingActivity extends AppCompatActivity {
             dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
                 @Override
                 public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
-                        return true;
-                    else
-                        return false;
-
+                    return (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0);
                 }
             });
             dialog.show();
@@ -419,6 +415,6 @@ public class SettingActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.slide_from_top, R.anim.stay_half_sec);
+        overridePendingTransition(R.anim.slide_from_top, R.anim.slide2bottom);
     }
 }

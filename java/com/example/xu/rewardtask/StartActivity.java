@@ -137,6 +137,8 @@ public class StartActivity extends AppCompatActivity {
                 URL url = new URL(httpUrl + "?" + httpArg);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
+                connection.setConnectTimeout(4000);
+                connection.setReadTimeout(4000);
                 // 填入apikey到HTTP header
                 connection.setRequestProperty("apikey", "f881c0cd4bb0e6a14ac4b91f5146c0b5");
                 connection.connect();

@@ -44,4 +44,7 @@
 
     <dimen name="ReleaseMission_MissionNameSize">30sp</dimen>
     <dimen name="ReleaseMission_ContentSize">18sp</dimen>
+
+    <dimen name="MyMission_Item_Size">20sp</dimen>
+    <dimen name="MyMission_Item_Padding">10dp</dimen>
 </resources>
