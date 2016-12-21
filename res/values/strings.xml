@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RewardTask</string>
+    <string name="app_name">AskMe</string>
 
     <!-- String for MainActivity -->
     <string name="UnLogin">未登录</string>

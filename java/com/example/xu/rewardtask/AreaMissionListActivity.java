@@ -35,6 +35,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -51,6 +52,7 @@ public class AreaMissionListActivity extends AppCompatActivity {
     private String order;
     private getMissionListAsyncTask getMissionListAsyncTask_;
     private boolean isRefreshing = false;
+    private boolean isChangeCity = false;
 
     private SwipeRefreshLayout swipe;
 
@@ -141,6 +143,7 @@ public class AreaMissionListActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 if (!isRefreshing) {
+                    isChangeCity = true;
                     getMissionListAsyncTask_ = new getMissionListAsyncTask();
                     getMissionListAsyncTask_.execute();
                 }
@@ -253,6 +256,7 @@ public class AreaMissionListActivity extends AppCompatActivity {
             MissionListItem item = l.get(position);
             Intent intent = new Intent(AreaMissionListActivity.this, MissionDetailActivity.class);
             intent.putExtra("MissionName", item.missionName);
+            Log.i(TAG, "ListActivity:"+item.missionName+" is clicked");
             intent.putExtra("UserName", item.userName);
             intent.putExtra("Date", item.date.toString());
             startActivity(intent);
@@ -274,8 +278,6 @@ public class AreaMissionListActivity extends AppCompatActivity {
             if (city.equals("全国"))
                 cityParams = "all";
 
-
-            // TODO 去掉因为debug加上去的东西
             try {
                 URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/menuServlet?city=" +
                         URLEncoder.encode(cityParams,"UTF-8") + "&type=" +
@@ -299,48 +301,44 @@ public class AreaMissionListActivity extends AppCompatActivity {
                     stringBuilder.append(line);
                 }
 
-                JSONArray jsonArray = new JSONArray(stringBuilder.toString());
+                JSONArray jsonArray = new JSONArray(URLDecoder.decode(stringBuilder.toString(), "UTF-8"));
+
+                Log.i(TAG, "Response:" + jsonArray.toString());
 
                 if (jsonArray.optJSONObject(0).getString("Status").equals("Empty"))
                     return "ListIsNull";
 
                 // 解析获取到的列表
+                missionList_data.clear();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    missionList_data.clear();
-
                     JSONObject jsonObject = jsonArray.optJSONObject(i);
+
+                    Log.i(TAG, "Mission:" + jsonObject.toString());
 
                     MissionListItem missionListItem = new MissionListItem(jsonObject);
 
                     missionList_data.add(missionListItem);
                 }
 
-                Log.i(TAG, timeList_data.toString());
                 timeList_data.clear();
                 moneyList_data.clear();
-                Log.i(TAG, timeList_data.toString());
 
                 for (MissionListItem mli : missionList_data) {
                     timeList_data.add(mli);
                     moneyList_data.add(mli);
                 }
 
-                Log.i(TAG, timeList_data.toString());
                 Collections.sort(timeList_data, new Comparator<MissionListItem>() {
                     @Override
                     public int compare(MissionListItem o1, MissionListItem o2) {
-                        if (o1.date.after(o2.date))
-                            return 1;
-                        else return 0;
+                        return (int)(o2.date.getTime() - o1.date.getTime());
                     }
                 });
 
                 Collections.sort(moneyList_data, new Comparator<MissionListItem>() {
                     @Override
                     public int compare(MissionListItem o1, MissionListItem o2) {
-                        if (o1.date.after(o2.date))
-                            return 1;
-                        else return 0;
+                        return o2.money - o1.money;
                     }
                 });
 
@@ -384,8 +382,12 @@ public class AreaMissionListActivity extends AppCompatActivity {
 
             if (result.equals("InternetGG") || result.equals("Fail")) {
                 tip.setText("获取列表失败，下拉重试");
+                tip.setVisibility(View.VISIBLE);
+                order = null;
             } else if (result.equals("ListIsNull")) {
                 tip.setText("此地区下暂无任务，请浏览其他地区或类别");
+                tip.setVisibility(View.VISIBLE);
+                order = null;
             } else {
                 tip.setVisibility(View.GONE);
 

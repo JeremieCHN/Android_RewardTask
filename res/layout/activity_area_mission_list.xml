@@ -92,13 +92,13 @@
                 android:id="@+id/AreaMissionList_MissionListByTime"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:divider="@color/colorGray" />
+                android:divider="@color/colorGray"/>
 
             <ListView
                 android:id="@+id/AreaMissionList_MissionListByMoney"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:divider="@color/colorGray" />
+                android:divider="@color/colorGray"/>
         </LinearLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 

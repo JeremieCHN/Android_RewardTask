@@ -23,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,6 +33,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.UUID;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -242,6 +245,30 @@ public class SettingActivity extends AppCompatActivity {
                 intent.putExtra("Statue", "Logout");
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_from_top, R.anim.slide2bottom);
+
+                File dir = new File(getFilesDir() + "/log");
+                if (!dir.exists())
+                    dir.mkdir();
+
+                File file = new File(getFilesDir() + "/log/log.txt");
+                if (!file.exists()) {
+                    try {
+                        file.createNewFile();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    FileOutputStream fout = new FileOutputStream(getFilesDir().toString() + "/log/log.txt", false);
+                    String str = "";
+                    byte bt[] = new byte[1024];
+                    bt = str.getBytes();
+                    fout.write(bt);
+                    fout.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -253,6 +280,7 @@ public class SettingActivity extends AppCompatActivity {
             Bitmap img = params[0];
             HttpURLConnection connection;
             try {
+                // TODO 发图片
                 URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/sendImage");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
@@ -260,23 +288,59 @@ public class SettingActivity extends AppCompatActivity {
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
 
-                /*ByteArrayOutputStream output = new ByteArrayOutputStream();
+                /*
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
                 img.compress(Bitmap.CompressFormat.PNG, 100, output);
                 byte[] bytes = output.toByteArray();
-                String imgStr = new String(bytes, "UTF-8");
 
+                List<Integer> imgList = new LinkedList<>();
+                for (int i = 0; i < bytes.length; i++) {
+                    imgList.add((int) bytes[i]);
+                }
+                Log.i(TAG, imgList.toString());
+
+                //String imgStr = new String(bytes, "UTF-8");
                 PrintWriter writer = new PrintWriter(connection.getOutputStream());
-
-                writer.write("username=" + CurrentUser.getInstance().getUserName() + "&image=" + imgStr);
+                writer.write("username=" + CurrentUser.getInstance().getUserName() + "&image=" + imgList.toString());
                 writer.flush();
                 writer.close();
+                */
+                //
 
-                Log.i(TAG, imgStr);*/
+                String BOUNDARY = UUID.randomUUID().toString(); // 边界标识 随机生成
+                String PREFIX = "--", LINE_END = "\r\n";
+                String CONTENT_TYPE = "multipart/form-data"; // 内容类型
 
-                // TODO 直接发图片
+                connection.setRequestProperty("Content-Type", CONTENT_TYPE + ";boundary=" + BOUNDARY);
 
-                connection.setRequestProperty("Content-Type", "multipart/form-data");
+                StringBuilder OutBuilder = new StringBuilder();
 
+                // message of user
+                OutBuilder.append(PREFIX);
+                OutBuilder.append(BOUNDARY);
+                OutBuilder.append(LINE_END);
+                /*OutBuilder.append("Content-Disposition: form-data; username=\""
+                        + URLEncoder.encode(CurrentUser.getInstance().getUserName(), "UTF-8")
+                        + "\";"
+                        + LINE_END);*/
+
+                // image part
+                OutBuilder.append("Content-type:image/png;"+LINE_END+LINE_END);
+
+                OutputStream os = connection.getOutputStream();
+                os.write(OutBuilder.toString().getBytes());
+
+                ByteArrayOutputStream imgBAOS = new ByteArrayOutputStream();
+                img.compress(Bitmap.CompressFormat.PNG, 100, imgBAOS);
+                byte[] bytes = imgBAOS.toByteArray();
+                os.write(bytes);
+                os.write(LINE_END.getBytes());
+
+                // ending
+                byte[] end_data = (PREFIX + BOUNDARY + PREFIX + LINE_END).getBytes();
+                os.write(end_data);
+                os.flush();
+                os.close();
 
                 InputStream is = connection.getInputStream();
                 StringBuilder builder = new StringBuilder();
@@ -349,8 +413,8 @@ public class SettingActivity extends AppCompatActivity {
 
             HttpURLConnection connection;
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/updateInfo?username=" + CurrentUser.getInstance().getUserName()
-                        + "&password=" + newPassword + "&description=" + newDescription);
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/updateInfo?username=" + URLEncoder.encode(CurrentUser.getInstance().getUserName(), "UTF-8")
+                        + "&password=" + newPassword + "&description=" + URLEncoder.encode(newDescription, "UTF-8"));
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();

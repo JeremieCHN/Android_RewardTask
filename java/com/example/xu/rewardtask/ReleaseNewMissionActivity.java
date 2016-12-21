@@ -140,20 +140,18 @@ public class ReleaseNewMissionActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Void... params) {
-            Log.e(TAG, "City:" + city);
-            Log.e(TAG, "Type:" + type);
-            // TODO 发给服务器
             HttpURLConnection connection = null;
             try {
                 URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/sendMission");
-                connection.setReadTimeout(4000);
-                connection.setConnectTimeout(4000);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setReadTimeout(4000);
+                connection.setConnectTimeout(4000);
 
                 OutputStream os = connection.getOutputStream();
                 PrintWriter writer = new PrintWriter(os);
-                writer.write("username=" + URLEncoder.encode(CurrentUser.getInstance().getUserName(), "UTF-8"));
+                writer.write("username=" + URLEncoder.encode(publisherSend, "UTF-8"));
                 writer.write("&missionname=" + URLEncoder.encode(missionNameSend, "UTF-8"));
                 writer.write("&content=" + URLEncoder.encode(contentSend, "UTF-8"));
                 writer.write("&type=" + URLEncoder.encode(typeSend, "UTF-8"));
@@ -161,6 +159,8 @@ public class ReleaseNewMissionActivity extends AppCompatActivity {
                 writer.write("&gold=" + URLEncoder.encode(money, "UTF-8"));
                 writer.flush();
                 writer.close();
+
+                Log.i(TAG, URLEncoder.encode(citySend, "UTF-8"));
 
                 InputStream is = connection.getInputStream();
                 StringBuilder builder = new StringBuilder();
@@ -170,9 +170,11 @@ public class ReleaseNewMissionActivity extends AppCompatActivity {
                     builder.append(line);
                 }
 
+                Log.i(TAG, builder.toString());
+
                 JSONObject jsonObject = new JSONObject(builder.toString());
-                if (jsonObject.getString("status") != null) {
-                    return jsonObject.getString("status");
+                if (jsonObject.getString("Status") != null) {
+                    return jsonObject.getString("Status");
                 }
 
             } catch (MalformedURLException e) {

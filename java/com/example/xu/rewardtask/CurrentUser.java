@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class CurrentUser {
 
-    public static String IP = "172.18.70.38:8080";
+    public static String IP = "172.18.69.207:8080";
 
     private String TAG = "CurrentUser";
 

@@ -1,5 +1,7 @@
 package com.example.xu.rewardtask;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -25,6 +27,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 
 public class LoginOrRegisterActivity extends AppCompatActivity {
@@ -140,7 +145,8 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         protected String doInBackground(Void... params) {
             HttpURLConnection connection = null;
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/registerServlet?username=" + nameStr + "&operation=check");
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/registerServlet?username=" +
+                        URLEncoder.encode(nameStr, "UTF-8") + "&operation=check");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(4000);
@@ -211,27 +217,30 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                 else if (password.getText().toString().equals(""))
                     Toast.makeText(LoginOrRegisterActivity.this, getResources().getString(R.string.LRActivity_PasswordNull), Toast.LENGTH_SHORT).show();
                 else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginOrRegisterActivity.this);
-                    View dialogView = getLayoutInflater().inflate(R.layout.dialog_loading, null);
+                    if (dialog == null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginOrRegisterActivity.this);
+                        View dialogView = getLayoutInflater().inflate(R.layout.dialog_loading, null);
 
-                    dialogView.findViewById(R.id.Dialog_Loading).setAnimation(AnimationUtils.loadAnimation(LoginOrRegisterActivity.this, R.anim.roteting));
-                    ((TextView) dialogView.findViewById(R.id.Dialog_Text)).setText("正在" + (state.equals("Login") ? "登录" : "注册") + "...");
+                        dialogView.findViewById(R.id.Dialog_Loading).setAnimation(AnimationUtils.loadAnimation(LoginOrRegisterActivity.this, R.anim.roteting));
+                        ((TextView) dialogView.findViewById(R.id.Dialog_Text)).setText("正在" + (state.equals("Login") ? "登录" : "注册") + "...");
 
-                    builder.setView(dialogView);
-                    dialog = builder.create();
-                    dialog.setCanceledOnTouchOutside(false);
-                    dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-                        @Override
-                        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                            if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
-                                return true;
-                            else
-                                return false;
+                        builder.setView(dialogView);
+                        dialog = builder.create();
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                            @Override
+                            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                                if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
+                                    return true;
+                                else
+                                    return false;
 
-                        }
-                    });
+                            }
+                        });
 
-                    dialog.show();
+                        dialog.show();
+                    }
+
                     if (state.equals("Login"))
                         new LoginAsyncTask().execute();
                     else if (state.equals("Register")) {
@@ -254,7 +263,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         protected String doInBackground(Void... params) {
             HttpURLConnection connection = null;
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/loginServlet?username=" + nameStr + "&password=" + passwordStr);
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/loginServlet?username=" + URLEncoder.encode(nameStr, "UTF-8") + "&password=" + passwordStr);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(4000);
@@ -302,15 +311,17 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            if (result == null)
-                return;
+            if (dialog != null)
+                dialog.cancel();
 
-            if (result.equals("InternetGG")) {
+            if (result == null || result.equals("InternetGG")) {
                 Toast.makeText(LoginOrRegisterActivity.this, "网络或服务器异常，请稍后再试", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
                 onBackPressed();
                 return;
             }
 
+            // refresh the CurrentUser
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 if (jsonObject.getString("Status").equals("Please register your account first"))
@@ -334,8 +345,40 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            if (dialog != null)
-                dialog.cancel();
+            // notice service
+            // change the log file
+            File dir = new File(getFilesDir() + "/log");
+            if (!dir.exists())
+                dir.mkdir();
+
+            File file = new File(getFilesDir() + "/log/log.txt");
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                FileOutputStream fout = new FileOutputStream(getFilesDir() + "/log/log.txt", false);
+                String str = CurrentUser.getInstance().getUserName();
+                byte[] bt = str.getBytes();
+                fout.write(bt);
+                fout.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // check whether the service is running
+            boolean isRunning = false;
+            ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))
+                if (service.service.getClassName().equals("com.example.xu.rewardtask.NoticeService"))
+                    isRunning = true;
+
+            if (!isRunning)
+                startService(new Intent(LoginOrRegisterActivity.this, NoticeService.class));
         }
     }
 
@@ -348,7 +391,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         protected String doInBackground(Void... params) {
             HttpURLConnection connection = null;
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/registerServlet?username=" + nameStr + "&password=" + passwordStr + "&operation=register");
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/registerServlet?username=" + URLEncoder.encode(nameStr, "UTF-8") + "&password=" + passwordStr + "&operation=register");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(4000);
@@ -465,13 +508,4 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.slide_from_right, R.anim.slide2left);
 
     }
-
-/*    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            startActivity(new Intent(LoginOrRegisterActivity.this, MainActivity.class));
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }*/
 }

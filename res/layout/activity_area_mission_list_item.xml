@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="100"
-            android:textColor="@color/colorGold"
+            android:textColor="@color/colorGreen"
             android:textSize="@dimen/AreaMissionList_ListItem_TextSize" />
 
         <ImageView

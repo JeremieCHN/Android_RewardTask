@@ -190,4 +190,13 @@ public class StartActivity extends AppCompatActivity {
                 manager.removeUpdates(listener);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (listener != null)
+            manager.removeUpdates(listener);
+    }
+
 }

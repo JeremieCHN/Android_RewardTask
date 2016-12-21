@@ -3,6 +3,7 @@ package com.example.xu.rewardtask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,7 +27,7 @@ public class MissionListItem {
         missionName = jsonObject.getString("Missionname");
         money = Integer.valueOf(jsonObject.getString("Gold"));
         String dateStr = jsonObject.getString("Date");
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         date = format.parse(dateStr.substring(0, 19));
     }
 

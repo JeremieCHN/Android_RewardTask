@@ -27,6 +27,7 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -46,7 +47,7 @@ public class MyMissionActivity extends AppCompatActivity {
         myMissions.execute();
 
         arrayList = new ArrayList<>();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.activity_my_mission_list_item, arrayList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.activity_my_mission_list_item, R.id.MyMission_MissionName, arrayList);
         listView.setAdapter(adapter);
     }
 
@@ -59,7 +60,7 @@ public class MyMissionActivity extends AppCompatActivity {
             if (isCancelled()) return null;
             HttpURLConnection connection = null;
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/getMyMissionsServlet?username=" + userName);
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/ownMission?username=" + URLEncoder.encode(userName, "UTF-8"));
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(4000);
@@ -131,6 +132,9 @@ public class MyMissionActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            if (dialog != null)
+                dialog.cancel();
+
             if (result == null)
                 return;
 
@@ -143,7 +147,7 @@ public class MyMissionActivity extends AppCompatActivity {
                 JSONArray jsonArray = new JSONArray(result);
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject = jsonArray.optJSONObject(i);
-                    arrayList.add(jsonObject.getString("missionName"));
+                    arrayList.add(jsonObject.getString("Missionname"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

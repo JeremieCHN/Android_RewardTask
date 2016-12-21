@@ -29,11 +29,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
@@ -54,6 +56,7 @@ public class MissionDetailActivity extends AppCompatActivity {
     private ListView commentLV;
     private EditText commentEdit;
     private TextView IsCompletedTip;
+    private TextView moneyTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +101,11 @@ public class MissionDetailActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(TAG, missionPublisher);
+                Log.i(TAG, missionName);
+                Log.i(TAG, commentEdit.getText().toString());
+                Log.i(TAG, CurrentUser.getInstance().getUserName());
+
                 new sendComment().execute(new Comment(missionPublisher, missionName,
                         commentEdit.getText().toString(),
                         CurrentUser.getInstance().getUserName(),
@@ -109,7 +117,7 @@ public class MissionDetailActivity extends AppCompatActivity {
 
         if (intent.getStringExtra("Date") != null) {
             Date date = new Date(intent.getStringExtra("Date"));
-            DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd hh:mm");
+            DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm");
             PublisherTimeTV.setText(missionPublisher + "发布于" + dateFormat.format(date));
         }
 
@@ -136,18 +144,26 @@ public class MissionDetailActivity extends AppCompatActivity {
                     return;
 
                 final Comment item = CommentList_Data.get(position);
-                if (item.getUsername().equals(missionPublisher)) {
+                // TODO 采纳按钮没做完
+                commentEdit.setText("回复 " + item.getUsername() + ": ");
+                commentEdit.requestFocus();
+                /*
+                if (item.getMissionUsername().equals(missionPublisher)) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MissionDetailActivity.this);
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.activity_mission_detail_dialog, null);
+                    builder.setView(dialogView);
+                    final AlertDialog dialog = builder.create();
 
                     Button adoptButton = (Button) dialogView.findViewById(R.id.MissionDetail_AdoptComment);
                     adoptButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // TODO 采纳操作，通知服务器
-                            item.setAdopt();
-                            adapter.notifyDataSetChanged();
+                            if (dialog.isShowing())
+                                dialog.cancel();
+
+                            //item.setAdopt();
+                            //adapter.notifyDataSetChanged();
                             new AdoptComment().execute();
                         }
                     });
@@ -156,16 +172,20 @@ public class MissionDetailActivity extends AppCompatActivity {
                     replyButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            commentEdit.setText("回复 " + item.getUsername() + ": ");
+                            commentEdit.requestFocus();
+
+                            if (dialog.isShowing())
+                                dialog.cancel();
                         }
                     });
 
-                    builder.create().show();
+                    dialog.show();
                 } else {
                     commentEdit.setText("回复 " + item.getUsername() + ": ");
                     commentEdit.requestFocus();
                 }
-
-                // TODO 评论点击事件
+                */
             }
         });
     }
@@ -216,14 +236,11 @@ public class MissionDetailActivity extends AppCompatActivity {
 
             viewHolder.commenter.setText(list.get(i).getUsername());
             viewHolder.commentDetail.setText(list.get(i).getComment());
-            DateFormat format = new SimpleDateFormat("yy-MM-dd hh-mm");
+            DateFormat format = new SimpleDateFormat("yy-MM-dd HH-mm");
             viewHolder.commentDate.setText(format.format(list.get(i).getDate()));
 
-            // TODO 采纳变色
-            /*
             if (list.get(i).isAdopt())
                 viewHolder.commentDetail.setTextColor(getResources().getColor(R.color.colorRed));
-            */
             return convertView;
         }
 
@@ -298,18 +315,17 @@ public class MissionDetailActivity extends AppCompatActivity {
                     Log.e(TAG, s);
                     JSONObject jsonObject = new JSONObject(s);
 
-
                     String dateStr = jsonObject.getString("Date");
-                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = format.parse(dateStr.substring(0, 19));
 
-                    DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd hh:mm");
+                    DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm");
                     PublisherTimeTV.setText(missionPublisher + "发布于" + dateFormat.format(date));
 
                     TextView contentTV = (TextView) findViewById(R.id.MissionDetail_Content);
-                    contentTV.setText(jsonObject.getString("Content"));
+                    contentTV.setText(URLDecoder.decode(jsonObject.getString("Content"), "UTF-8"));
 
-                    TextView moneyTV = (TextView) findViewById(R.id.MissionDetail_Money);
+                    moneyTV = (TextView) findViewById(R.id.MissionDetail_Money);
                     moneyTV.setText(jsonObject.getString("Gold"));
 
                     if (jsonObject.getString("IsComplete").equals(Mission.COMPLETED)) {
@@ -320,6 +336,8 @@ public class MissionDetailActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (ParseException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
                 new getCommentAsyncTask().execute();
@@ -334,9 +352,12 @@ public class MissionDetailActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
 
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/getComment?mission=" + missionName + "&publisher=" + missionPublisher);
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/getComment?mission=" +
+                        URLEncoder.encode(missionName, "UTF-8") + "&publisher=" +
+                        URLEncoder.encode(missionPublisher, "UTF-8"));
 
                 connection = (HttpURLConnection) url.openConnection();
+                connection.setConnectTimeout(4000);
                 connection.setRequestMethod("GET");
                 connection.connect();
 
@@ -350,24 +371,18 @@ public class MissionDetailActivity extends AppCompatActivity {
                 }
                 reader.close();
 
+                Log.i(TAG, buffer.toString());
+
                 JSONArray array = new JSONArray(buffer.toString());
-                String statue = array.optJSONObject(0).getString("Statue");
-                if (statue.equals("Success")) {
-
-                    if (array.optJSONObject(0).getString("Commentor").equals(""))
-                        return "NoComment";
-
+                String statue = array.optJSONObject(0).getString("Status");
+                if (statue != null && statue.equals("Success")) {
+                    CommentList_Data.clear();
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject jsonObject = array.getJSONObject(i);
                         CommentList_Data.add(new Comment(jsonObject));
                     }
-
-                    adapter.notifyDataSetChanged();
-
-                    return "Success";
-                } else {
-                    return "Fail";
                 }
+                return statue;
             } catch (UnknownHostException e) {
                 e.printStackTrace();
                 return "InternetGG";
@@ -379,8 +394,9 @@ public class MissionDetailActivity extends AppCompatActivity {
                 return "InternetGG";
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.i(TAG, e.toString());
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
                 e.printStackTrace();
             } finally {
                 if (connection != null)
@@ -395,24 +411,91 @@ public class MissionDetailActivity extends AppCompatActivity {
                 Toast.makeText(MissionDetailActivity.this, "评论获取失败，请稍后再试", Toast.LENGTH_SHORT).show();
             } else if (s.equals("InternetGG")) {
                 Toast.makeText(MissionDetailActivity.this, "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
-            } else {
+            } else if (s.equals("Empty")) {
+                tip.setText("暂无评论");
+            } else if (s.equals("Success")) {
                 tip.setVisibility(View.GONE);
                 commentLV.setVisibility(View.VISIBLE);
+                adapter.notifyDataSetChanged();
             }
         }
     }
 
-    class AdoptComment extends AsyncTask<Comment, Void, Comment> {
+    class AdoptComment extends AsyncTask<Integer, Void, Integer> {
+
+        String MissionNameSend;
+        String MissionPublisherSend;
+        String CommentPublisherSend;
+        String DateSend;
+        String GoldSend;
 
         @Override
-        protected Comment doInBackground(Comment... params) {
+        protected void onPreExecute() {
+            try {
+                MissionNameSend = URLEncoder.encode(missionName, "UTF-8");
+                MissionPublisherSend = URLEncoder.encode(missionPublisher, "UTF-8");
+                GoldSend = moneyTV.getText().toString();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected Integer doInBackground(Integer... params) {
+            // TODO
+            HttpURLConnection connection = null;
+
+            try {
+                CommentPublisherSend = URLEncoder.encode(CommentList_Data.get(params[0]).getUsername(), "UTF-8");
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                DateSend = format.format( CommentList_Data.get(params[0]).getDate());
+
+
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/adoptServlet?"
+                        + "mission=" + MissionNameSend
+                        + "&publisher=" + MissionPublisherSend
+                        + "&username=" + CommentPublisherSend
+                        + "&date=" + DateSend
+                        + "&gold=" + GoldSend);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(4000);
+                connection.setReadTimeout(4000);
+                connection.connect();
+
+                InputStream is = connection.getInputStream();
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+
+                JSONObject jsonObject = new JSONObject(builder.toString());
+                if (jsonObject.getString("Status") != null && jsonObject.getString("Status").equals("Success")) {
+                    return params[0];
+                } else {
+                    return null;
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             return params[0];
         }
 
         @Override
-        protected void onPostExecute(Comment c) {
-            c.setAdopt();
-            adapter.notifyDataSetChanged();
+        protected void onPostExecute(Integer c) {
+            if (c != null) {
+                CommentList_Data.get(c).setAdopt();
+                adapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(MissionDetailActivity.this, "采纳失败", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -420,18 +503,23 @@ public class MissionDetailActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(Comment... params) {
+            Log.i(TAG, params[0].toPostParams() + " is ready to send");
             HttpURLConnection connection;
 
             try {
-                URL url = new URL("http://" + CurrentUser.IP + "/AndroidService/sendComment");
+                URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/sendComment");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
 
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
 
+                Log.i(TAG, params[0].toPostParams());
+
                 connection.getOutputStream().write(params[0].toPostParams().getBytes());
                 connection.connect();
+
+                Log.i(TAG, Integer.toString(connection.getResponseCode()));
 
                 if (connection.getResponseCode() == 200) {
                     StringBuilder builder = new StringBuilder();
@@ -440,6 +528,7 @@ public class MissionDetailActivity extends AppCompatActivity {
                     while ((line = reader.readLine()) != null)
                         builder.append(line);
 
+                    Log.i(TAG, "Response: " + builder.toString());
                     return builder.toString();
                 }
             } catch (IOException e) {
@@ -484,18 +573,27 @@ public class MissionDetailActivity extends AppCompatActivity {
                     String statusStr = jsonObject.getString("Status");
                     String dateStr = jsonObject.getString("Date");
                     if (statusStr != null && statusStr.equals("Success")) {
+                        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
                         CommentList_Data.add(new Comment(missionPublisher, missionName, commentEdit.getText().toString(),
-                                CurrentUser.getInstance().getUserName(), new Date(dateStr)));
+                                CurrentUser.getInstance().getUserName(), format.parse(dateStr)));
+
                         commentEdit.setText("");
-                        Toast.makeText(MissionDetailActivity.this, "发布成功，请稍后再试", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MissionDetailActivity.this, "发布成功", Toast.LENGTH_SHORT).show();
+                        if (dialog != null)
+                            dialog.cancel();
+                        new getCommentAsyncTask().execute();
                         return;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
             }
             Toast.makeText(MissionDetailActivity.this, "发布失败，请稍后再试", Toast.LENGTH_SHORT).show();
-            if (dialog != null) dialog.cancel();
+            if (dialog != null)
+                dialog.cancel();
         }
     }
 

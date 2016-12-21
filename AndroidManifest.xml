@@ -10,10 +10,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FIND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -45,7 +46,23 @@
         <activity
             android:name=".ReleaseNewMissionActivity"
             android:launchMode="singleInstance" />
-        <activity android:name=".MyMissionActivity"></activity>
+        <activity android:name=".MyMissionActivity"
+            android:launchMode="singleInstance" />
+
+        <receiver android:name=".BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".NoticeReceiver">
+            <intent-filter>
+                <action android:name="NewComment"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".NoticeService" />
     </application>
 
 </manifest>
