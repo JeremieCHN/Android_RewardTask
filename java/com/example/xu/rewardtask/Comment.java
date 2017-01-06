@@ -10,6 +10,7 @@ import java.util.Date;
 
 public class Comment {
     static String ADOPTED = "true";
+    static String UNADOPTED = "false";
 
     private String missionUsername, missionName, comment, username, isAdopted;
     private Date date;
@@ -55,7 +56,7 @@ public class Comment {
     }
 
     public boolean isAdopt() {
-        return isAdopted.equals(ADOPTED);
+        return !isAdopted.equals(UNADOPTED);
     }
 
     public void setAdopt() {

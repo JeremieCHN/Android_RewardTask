@@ -32,7 +32,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -46,8 +45,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MissionDetailActivity extends AppCompatActivity {
-    // TODO 待测试
-
     private String TAG = "MissionDetailActivity";
     private String missionPublisher;
     private String missionName;
@@ -93,7 +90,7 @@ public class MissionDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 未登录的话直接显示评论编辑的部分
+        // 未登录的话直接不显示评论编辑的部分
         if (!CurrentUser.getInstance().isLogin())
             findViewById(R.id.MissionDetail_CommentEditPart).setVisibility(View.GONE);
 
@@ -144,11 +141,13 @@ public class MissionDetailActivity extends AppCompatActivity {
                     return;
 
                 final Comment item = CommentList_Data.get(position);
-                // TODO 采纳按钮没做完
-                commentEdit.setText("回复 " + item.getUsername() + ": ");
-                commentEdit.requestFocus();
-                /*
-                if (item.getMissionUsername().equals(missionPublisher)) {
+
+                // 登陆者是任务发布者 且 任务赏金未被领取才会有采纳
+                if (item.getMissionUsername().equals(CurrentUser.getInstance().getUserName())
+                        && IsCompletedTip.getText().equals("此任务的赏金尚未被领取")) {
+                    Log.i(TAG, item.getMissionUsername());
+                    Log.i(TAG, CurrentUser.getInstance().getUserName());
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(MissionDetailActivity.this);
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.activity_mission_detail_dialog, null);
@@ -162,9 +161,7 @@ public class MissionDetailActivity extends AppCompatActivity {
                             if (dialog.isShowing())
                                 dialog.cancel();
 
-                            //item.setAdopt();
-                            //adapter.notifyDataSetChanged();
-                            new AdoptComment().execute();
+                            new AdoptComment().execute(position);
                         }
                     });
 
@@ -173,6 +170,7 @@ public class MissionDetailActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             commentEdit.setText("回复 " + item.getUsername() + ": ");
+                            commentEdit.setSelection(5+item.getUsername().length());
                             commentEdit.requestFocus();
 
                             if (dialog.isShowing())
@@ -183,9 +181,9 @@ public class MissionDetailActivity extends AppCompatActivity {
                     dialog.show();
                 } else {
                     commentEdit.setText("回复 " + item.getUsername() + ": ");
+                    commentEdit.setSelection(5+item.getUsername().length());
                     commentEdit.requestFocus();
                 }
-                */
             }
         });
     }
@@ -193,7 +191,7 @@ public class MissionDetailActivity extends AppCompatActivity {
     class CommentAdapter extends BaseAdapter {
         private List<Comment> list = null;
 
-        public CommentAdapter(List<Comment> list_) {
+        CommentAdapter(List<Comment> list_) {
             list = list_;
         }
 
@@ -236,7 +234,7 @@ public class MissionDetailActivity extends AppCompatActivity {
 
             viewHolder.commenter.setText(list.get(i).getUsername());
             viewHolder.commentDetail.setText(list.get(i).getComment());
-            DateFormat format = new SimpleDateFormat("yy-MM-dd HH-mm");
+            DateFormat format = new SimpleDateFormat("yy-MM-dd HH:mm");
             viewHolder.commentDate.setText(format.format(list.get(i).getDate()));
 
             if (list.get(i).isAdopt())
@@ -245,9 +243,9 @@ public class MissionDetailActivity extends AppCompatActivity {
         }
 
         class ViewHolder {
-            public TextView commenter;
-            public TextView commentDetail;
-            public TextView commentDate;
+            TextView commenter;
+            TextView commentDetail;
+            TextView commentDate;
         }
     }
 
@@ -333,11 +331,11 @@ public class MissionDetailActivity extends AppCompatActivity {
                     } else {
                         IsCompletedTip.setText("此任务的赏金尚未被领取");
                     }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (ParseException e) {
-                    e.printStackTrace();
-                } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
                 new getCommentAsyncTask().execute();
@@ -442,14 +440,12 @@ public class MissionDetailActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(Integer... params) {
-            // TODO
             HttpURLConnection connection = null;
 
             try {
                 CommentPublisherSend = URLEncoder.encode(CommentList_Data.get(params[0]).getUsername(), "UTF-8");
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                DateSend = format.format( CommentList_Data.get(params[0]).getDate());
-
+                DateSend = URLEncoder.encode(format.format(CommentList_Data.get(params[0]).getDate()), "UTF-8");
 
                 URL url = new URL("http://" + CurrentUser.IP + "/AndroidServer/adoptServlet?"
                         + "mission=" + MissionNameSend
@@ -477,22 +473,22 @@ public class MissionDetailActivity extends AppCompatActivity {
                 } else {
                     return null;
                 }
-            } catch (MalformedURLException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } finally {
+                if (connection != null)
+                    connection.disconnect();
             }
-
-            return params[0];
+            return null;
         }
 
         @Override
         protected void onPostExecute(Integer c) {
             if (c != null) {
+                IsCompletedTip.setText("此任务的赏金已经被领取");
                 CommentList_Data.get(c).setAdopt();
                 adapter.notifyDataSetChanged();
+                CurrentUser.getInstance().setMoney(CurrentUser.getInstance().getMoney() - Integer.parseInt(moneyTV.getText().toString()));
             } else {
                 Toast.makeText(MissionDetailActivity.this, "采纳失败", Toast.LENGTH_SHORT).show();
             }
